@@ -17,9 +17,11 @@ Vanir
 Muspelheim
 Niflheim
 Jormungandr
-Huginn and Muninn
+Huginn
+Muninn
 Vidar
-Modi and Magni
+Modi
+Magni
 Gefjon
 Jord
 Sigyn
