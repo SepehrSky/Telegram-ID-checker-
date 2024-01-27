@@ -1,1 +1,0 @@
-cmd /c pip install configparser telethon
