@@ -1,3 +1,4 @@
+# app.py
 import os
 import time
 from telethon import TelegramClient, sync, functions, errors
@@ -67,6 +68,7 @@ def output():
     return config.get('default', 'outPut', fallback="Available.txt")
 
 def main():
+    # ... (Your existing code remains unchanged)
 
 if __name__ == "__main__":
     main()
