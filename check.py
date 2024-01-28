@@ -71,7 +71,10 @@ def output():
     return config.get('default', 'outPut', fallback="Available.txt")
 
 def main():
-    # ... (Your existing code remains unchanged)
+    get_words()  # Adjust this line based on your actual logic
 
 if __name__ == "__main__":
+    client = TelegramClient('Checker', config.get('default', 'api_id'), config.get('default', 'api_hash'))
+    client.start()
+
     main()
