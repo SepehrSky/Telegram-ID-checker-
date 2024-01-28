@@ -4,6 +4,9 @@ import time
 from telethon import TelegramClient, sync, functions, errors
 import configparser
 
+config = configparser.ConfigParser()
+config.read('config.ini')  # Add this line to read the configuration file
+
 def read_checked_words():
     try:
         path = os.path.join("word_lists", "checked_words.txt")
