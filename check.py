@@ -17,10 +17,17 @@ def write_checked_words(checked_words):
     with open(path, 'w') as file:
         file.write('\n'.join(checked_words))
 
-def read_config():
-    config = configparser.ConfigParser()
-    config.read('config.ini')
-    return config['default']
+def read_word_list():
+    path = os.path.join("word_lists", config.get('default', 'wordList'))
+    try:
+        with open(path, 'r', encoding='utf-8-sig') as file:
+            words = file.read().split('\n')
+        return words
+    except FileNotFoundError:
+        return []
+
+def remove_checked_words(word_list, checked_words):
+    return [word for word in word_list if word not in checked_words]
 
 def user_lookup(account, checked_words):
     if account in checked_words:
@@ -45,20 +52,11 @@ def user_lookup(account, checked_words):
         print("Error:", bR.message)
 
 def get_words():
-    words = []
     delay = config.get('default', 'delay')
-    path = os.path.join("word_lists", config.get('default', 'wordList'))
-
-    if path is not None:
-        file = open(path, 'r', encoding='utf-8-sig')
-        words = file.read().split('\n')
-        file.close()
-    else:
-        print("Word list not found.")
-
+    word_list = read_word_list()
     checked_words = read_checked_words()
 
-    for name in words:
+    for name in remove_checked_words(word_list, checked_words):
         user_lookup(name, checked_words)
         time.sleep(int(delay))
 
@@ -69,6 +67,6 @@ def output():
     return config.get('default', 'outPut', fallback="Available.txt")
 
 def main():
-    
+
 if __name__ == "__main__":
     main()
