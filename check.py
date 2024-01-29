@@ -23,7 +23,8 @@ else:
     client.start()
 
     # Initialize the Updater and Dispatcher for rate limit handling
-    updater = Updater(token=bot_token, use_context=True)
+    updater = Updater(use_context=True)
+    updater.bot.token = bot_token
     dispatcher = updater.dispatcher
 
 def user_lookup(account):
@@ -32,10 +33,10 @@ def user_lookup(account):
         if result:
             print("The telegram", account, "is available")
             log_word(account, "Available.txt")
-            log_word(account, "Checked_words.txt")
+            log_word(account, "checked_words.txt")
         else:
             print("The telegram", account, "is not available")
-            log_word(account, "Checked_words.txt")
+            log_word(account, "checked_words.txt")
     except errors.FloodWaitError as fW:
         print(f"Hit the rate limit, waiting {fW.seconds} seconds")
         time.sleep(fW.seconds)
