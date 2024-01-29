@@ -27,13 +27,13 @@ dispatcher = updater.dispatcher
 def user_lookup(account):
     try:
         result = client(functions.account.CheckUsernameRequest(username=account))
+        log_word(account, "checked_words.txt")  # Log all checked usernames
+
         if result:
             print("The telegram", account, "is available")
-            log_word(account, "Available.txt")
-            log_word(account, "checked_words.txt")
+            log_word(account, "Available.txt")  # Log available usernames
         else:
             print("The telegram", account, "is not available")
-            log_word(account, "checked_words.txt")
     except errors.FloodWaitError as fW:
         print(f"Hit the rate limit, waiting {fW.seconds} seconds")
         time.sleep(fW.seconds)
@@ -42,6 +42,7 @@ def user_lookup(account):
         print("Username is invalid")
     except errors.rpcbaseerrors.BadRequestError as bR:
         print("Error:", bR.message)
+
 
 def log_word(word, filename):
     with open(filename, 'a') as file:
