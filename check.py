@@ -1,5 +1,7 @@
 from telethon import TelegramClient, sync, functions, errors
-from telegram.ext import CommandHandler, MessageHandler, Filters, Updater
+from telegram.ext import CommandHandler, MessageHandler, Updater
+from telegram import Update
+from telegram.ext import CallbackContext
 import configparser
 import time
 import os
@@ -48,7 +50,7 @@ def log_word(word, filename):
         file.write(f"{word}\n")
 
 def remove_checked_words():
-    checked_path = os.path.join("word_lists", "Checked_words.txt")
+    checked_path = os.path.join("word_lists", "checked_words.txt")
     word_list_path = os.path.join("word_lists", config.get('default', 'wordList'))
 
     if os.path.exists(checked_path) and os.path.exists(word_list_path):
@@ -63,7 +65,7 @@ def remove_checked_words():
         with open(word_list_path, 'w', encoding='utf-8-sig') as updated_file:
             updated_file.write('\n'.join(remaining_words))
 
-def get_words(update, context):
+def get_words(update: Update, context: CallbackContext):
     delay = config.get('default', 'delay')
     path = os.path.join("word_lists", config.get('default', 'wordList'))
 
