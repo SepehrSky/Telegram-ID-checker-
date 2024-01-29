@@ -20,7 +20,7 @@ else:
     client = TelegramClient('Checker', api_id, api_hash)
     client.start()
 
-updater = Updater(token=bot_token)
+updater = Updater(bot_token, use_context=True)
 dispatcher = updater.dispatcher
 
 def user_lookup(account):
@@ -97,24 +97,20 @@ def main():
     ''')
 
     print("1 = Enter username manually\n2 = Read a list of usernames from the word_lists folder")
-    options = ["1", "2"]
-    choice = input("Select your option: ")
-
-    while choice not in options:
-        choice = input("1 or 2 ... Please!: ")
-
-    if choice == "1":
-        username = input("Enter a username: ")
-        user_lookup(username)
-    elif choice == "2":
-        # Add the CommandHandler for /get_words
-        get_words_handler = CommandHandler('get_words', get_words)
-        dispatcher.add_handler(get_words_handler)
-
-        # Start the Updater
-        updater.start_polling()
-
-    updater.idle()
+    set_options = ["1", "2"]
+    option = input("Select your option: ")
+    
+    while True:
+        if option in set_options:
+            if option == set_options[0]:
+                name = input("Enter a username: ")
+                user_lookup(name)
+            else:
+                print("Getting usernames from word_lists...")
+                get_words(None, None)
+                break
+        else:
+            option = input("1 or 2 ... Please!: ")
 
 if __name__ == "__main__":
     main()
