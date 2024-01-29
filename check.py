@@ -23,8 +23,7 @@ else:
     client.start()
 
     # Initialize the Updater and Dispatcher for rate limit handling
-    updater = Updater(use_context=True)
-    updater.bot.token = bot_token
+    updater = Updater(token=bot_token)
     dispatcher = updater.dispatcher
 
 def user_lookup(account):
