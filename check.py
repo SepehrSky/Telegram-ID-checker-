@@ -20,7 +20,7 @@ else:
     client = TelegramClient('Checker', api_id, api_hash)
     client.start()
 
-updater = Updater(bot_token, use_context=True)
+updater = Updater(bot_token)
 dispatcher = updater.dispatcher
 
 def user_lookup(account):
