@@ -1,6 +1,5 @@
 from telethon import TelegramClient, sync, functions, errors
-from telegram import Bot
-from telegram.ext import ChatBot, MessageHandler, Filters
+from telegram.ext import CommandHandler, MessageHandler, Filters, Updater
 import configparser
 import time
 import os
@@ -21,8 +20,9 @@ else:
     client = TelegramClient('Checker', api_id, api_hash)
     client.start()
 
-    # Initialize the ChatBot for rate limit handling
-    chatbot = ChatBot(token=bot_token)
+    # Initialize the Updater and Dispatcher for rate limit handling
+    updater = Updater(token=bot_token, use_context=True)
+    dispatcher = updater.dispatcher
 
 def user_lookup(account):
     try:
@@ -63,7 +63,7 @@ def remove_checked_words():
         with open(word_list_path, 'w', encoding='utf-8-sig') as updated_file:
             updated_file.write('\n'.join(remaining_words))
 
-def get_words():
+def get_words(update, context):
     delay = config.get('default', 'delay')
     path = os.path.join("word_lists", config.get('default', 'wordList'))
 
@@ -78,7 +78,7 @@ def get_words():
     print("Removing checked words from the word list...")
     remove_checked_words()
     print("All done")
-    input("Press enter to exit...")
+    context.bot.send_message(chat_id=update.message.chat_id, text="All done")
 
 def main():
     print('''
@@ -108,7 +108,12 @@ def main():
         username = input("Enter a username: ")
         user_lookup(username)
     elif choice == "2":
-        get_words()
+        # Add the CommandHandler for /get_words
+        get_words_handler = CommandHandler('get_words', get_words)
+        dispatcher.add_handler(get_words_handler)
+
+        # Start the Updater
+        updater.start_polling()
 
 if __name__ == "__main__":
     main()
