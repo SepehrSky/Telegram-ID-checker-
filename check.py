@@ -21,7 +21,7 @@ else:
     client = TelegramClient('Checker', api_id, api_hash)
     client.start()
 
-updater = Updater(token=bot_token, use_context=True)
+updater = Updater(bot_token, use_context=True)
 dispatcher = updater.dispatcher
 
 def user_lookup(account):
@@ -91,15 +91,14 @@ def main():
       ░     ░ ░  ░░ ░ ▒  ░ ░ ░  ░  ░   ░   ░▒ ░ ▒░  ▒   ▒▒ ░░  ░      ░
     ░         ░     ░ ░      ░   ░ ░   ░   ░░   ░   ░   ▒   ░      ░   
                 ░  ░    ░  ░   ░  ░      ░    ░           ░  ░       ░   
-    - Username Checker -
-    Make sure to read the config.ini and README.md on github
-    Bulk checking may result in false positives and longer wait times
+    - Username Checker - From 3phrn
     ''')
 
+    print("1 = Enter username manually\n2 = Read a list of usernames from the word_lists folder")
     set_options = ["1", "2"]
-    option = input("Select your option: ")
 
     while True:
+        option = input("Select your option: ")
         if option in set_options:
             if option == set_options[0]:
                 name = input("Enter a username: ")
@@ -109,7 +108,7 @@ def main():
                 get_words(None, None)
                 break
         else:
-            option = input("1 or 2 ... Please!: ")
+            print("1 or 2 ... Please!")
 
 if __name__ == "__main__":
     main()
