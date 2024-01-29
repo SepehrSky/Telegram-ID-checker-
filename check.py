@@ -1,7 +1,5 @@
 from telethon import TelegramClient, sync, functions, errors
-from telegram.ext import CommandHandler, MessageHandler, Updater
-from telegram import Update
-from telegram.ext import CallbackContext
+from telegram.ext import CommandHandler, Updater
 import configparser
 import time
 import os
@@ -22,9 +20,8 @@ else:
     client = TelegramClient('Checker', api_id, api_hash)
     client.start()
 
-    # Initialize the Updater and Dispatcher for rate limit handling
-    updater = Updater(token=bot_token, use_context=True)
-    dispatcher = updater.dispatcher
+updater = Updater(token=bot_token)
+dispatcher = updater.dispatcher
 
 def user_lookup(account):
     try:
@@ -65,7 +62,7 @@ def remove_checked_words():
         with open(word_list_path, 'w', encoding='utf-8-sig') as updated_file:
             updated_file.write('\n'.join(remaining_words))
 
-def get_words(update: Update, context: CallbackContext):
+def get_words(update, context):
     delay = config.get('default', 'delay')
     path = os.path.join("word_lists", config.get('default', 'wordList'))
 
@@ -116,6 +113,8 @@ def main():
 
         # Start the Updater
         updater.start_polling()
+
+    updater.idle()
 
 if __name__ == "__main__":
     main()
