@@ -1,6 +1,4 @@
-from telethon import TelegramClient, sync, functions, errors
-from telegram.ext import CommandHandler, Updater
-from telegram import Update
+from telethon import TelegramClient, functions, errors
 import configparser
 import time
 import os
@@ -10,9 +8,8 @@ config.read('config.ini')
 
 api_id = config.get('default', 'api_id')
 api_hash = config.get('default', 'api_hash')
-bot_token = config.get('default', 'bot_token')
 
-if api_id == 'UPDATE ME' or api_hash == 'UPDATE ME' or bot_token == 'UPDATE ME':
+if api_id == 'UPDATE ME' or api_hash == 'UPDATE ME':
     print("Please read the config.ini and README.md")
     input()
     exit()
@@ -20,9 +17,6 @@ else:
     api_id = int(api_id)
     client = TelegramClient('Checker', api_id, api_hash)
     client.start()
-
-updater = Updater(bot_token, use_context=True)
-dispatcher = updater.dispatcher
 
 def user_lookup(account):
     try:
@@ -36,22 +30,12 @@ def user_lookup(account):
             print("The telegram", account, "is not available")
     except errors.FloodWaitError as fW:
         print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-        action = input("Choose action: (c) close, (s) sleep: ")
-        if action == 'c':
-            print("Closing the app.")
-            exit()
-        elif action == 's':
-            print(f"Putting the app to sleep for {fW.seconds} seconds.")
-            time.sleep(fW.seconds)
-            user_lookup(account)  # This line will be executed after the sleep duration
-        else:
-            print("Invalid choice. Closing the app.")
-            exit()
+        time.sleep(fW.seconds)
+        user_lookup(account)
     except errors.UsernameInvalidError as uI:
         print("Username is invalid")
     except errors.rpcbaseerrors.BadRequestError as bR:
         print("Error:", bR.message)
-
 
 def log_word(word, filename):
     with open(filename, 'a') as file:
@@ -73,7 +57,7 @@ def remove_checked_words():
         with open(word_list_path, 'w', encoding='utf-8-sig') as updated_file:
             updated_file.write('\n'.join(remaining_words))
 
-def get_words(update: Update, context):
+def get_words():
     delay = config.get('default', 'delay')
     path = os.path.join("word_lists", config.get('default', 'wordList'))
 
@@ -88,9 +72,11 @@ def get_words(update: Update, context):
     print("Removing checked words from the word list...")
     remove_checked_words()
     print("All done")
-    context.bot.send_message(chat_id=update.message.chat_id, text="All done")
 
-def main():
+def close():
+    print("Closing the app.")
+
+if __name__ == "__main__":
     print('''
     ▄▄▄█████▓▓█████  ██▓    ▓█████   ▄████  ██▀███   ▄▄▄       ███▄ ▄███▓
     ▓  ██▒ ▓▒▓█   ▀ ▓██▒    ▓█   ▀  ██▒ ▀█▒▓██ ▒ ██▒▒████▄    ▓██▒▀█▀ ██▒
@@ -115,12 +101,8 @@ def main():
                 user_lookup(name)
             else:
                 print("Getting usernames from word_lists...")
-                get_words(None, None)
+                get_words()
+                close()  # Close the app
                 break
         else:
             print("1 or 2 ... Please!")
-
-if __name__ == "__main__":
-    main()
-    updater.start_polling()
-    updater.idle()
