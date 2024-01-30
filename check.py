@@ -45,12 +45,18 @@ async def get_words():
             words = file.read().split('\n')
 
         for name in words:
-            await user_lookup(name)
-            await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
+            try:
+                await user_lookup(name)
+                await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
+            except errors.FloodWaitError as fW:
+                print(f"Hit the rate limit, waiting {fW.seconds} seconds")
+                await asyncio.sleep(fW.seconds)
+                await display_options()
 
     print("Removing checked words from the word list...")
     # Implement remove_checked_words() as needed
     print("All done")
+
 
 async def close():
     print("Closing the app.")
