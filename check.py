@@ -52,12 +52,9 @@ async def get_words():
             await user_lookup(name)
             await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
 
-    print("Removing checked words from the word list...")
-    # Implement remove_checked_words() as needed
-    print("All done")
-
-    # Display options after the rate limit wait
-    await display_options()
+        print("Removing checked words from the word list...")
+        # Implement remove_checked_words() as needed
+        print("All done")
 
 async def close():
     print("Closing the app.")
@@ -88,6 +85,7 @@ async def main():
             except errors.FloodWaitError as fW:
                 print(f"Hit the rate limit, waiting {fW.seconds} seconds")
                 await asyncio.sleep(fW.seconds)
+                print("Options after rate limit:")
                 await display_options()
             except Exception as e:
                 print(f"Unhandled error: {e}")
