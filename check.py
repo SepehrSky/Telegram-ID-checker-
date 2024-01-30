@@ -1,5 +1,4 @@
 from telethon import TelegramClient, functions, errors
-from telegram.ext import Updater
 import configparser
 import os
 import asyncio
@@ -9,7 +8,6 @@ config.read('config.ini')
 
 api_id = int(config.get('default', 'api_id'))
 api_hash = config.get('default', 'api_hash')
-bot_token = config.get('default', 'bot_token')
 
 client = TelegramClient('Checker', api_id, api_hash)
 client.start()
@@ -86,6 +84,12 @@ async def main():
             except errors.FloodWaitError as fW:
                 print(f"Hit the rate limit, waiting {fW.seconds} seconds")
                 await asyncio.sleep(fW.seconds)
+                print('''
+                - Username Checker -
+                
+1 = Enter username manually
+2 = Read a list of usernames from the word_lists folder
+                ''')
             except Exception as e:
                 print(f"Unhandled error: {e}")
                 await asyncio.sleep(5)
