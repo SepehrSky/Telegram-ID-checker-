@@ -90,6 +90,8 @@ async def main():
             except Exception as e:
                 print(f"Unhandled error: {e}")
                 await asyncio.sleep(5)
+                print("Options after error:")
+                await display_options()
         elif option == '1':
             # Implement the case for entering username manually
             pass
