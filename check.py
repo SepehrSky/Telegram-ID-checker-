@@ -1,5 +1,5 @@
 from telethon import TelegramClient, functions, errors
-from telegram.ext import CommandHandler, Updater, MessageHandler, Filters, ContextTypes
+from telegram.ext import CommandHandler, Updater, MessageHandler, Filters, CallbackContext
 from telegram import Update
 import configparser
 import os
@@ -105,7 +105,7 @@ async def close():
     print("Closing the app.")
     await client.disconnect()
 
-async def main():
+async def main(context):
     print('''
     ▄▄▄█████▓▓█████  ██▓    ▓█████   ▄████  ██▀███   ▄▄▄       ███▄ ▄███▓
     ▓  ██▒ ▓▒▓█   ▀ ▓██▒    ▓█   ▀  ██▒ ▀█▒▓██ ▒ ██▒▒████▄    ▓██▒▀█▀ ██▒
@@ -137,7 +137,7 @@ Select your option: 2
 if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
-        context = ContextTypes.CHAT
+        context = CallbackContext
         loop.run_until_complete(main(context))
     except KeyboardInterrupt:
         loop.run_until_complete(close())
