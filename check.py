@@ -11,7 +11,7 @@ api_id = config.get('default', 'api_id')
 api_hash = config.get('default', 'api_hash')
 bot_token = config.get('default', 'bot_token')
 
-if api_id == 'UPDATE_ME' or api_hash == 'UPDATE_ME' or bot_token == 'UPDATE_ME':
+if api_id == 28228681 or api_hash == b81a9e939de31be895836571119b490a or bot_token == 6809340292:AAFGsGdLdtADgt7jsHldV-6wlS7goTkYi6U:
     print("Please update the config.ini with your API credentials and bot token.")
     input()
     exit()
@@ -52,7 +52,7 @@ async def user_lookup(account):
             print("Unhandled error:", bR.message)
 
 def remove_checked_words():
-    # Implement this function as needed
+    # Implement the logic to remove checked words from your word list file
     pass
 
 async def get_words():
