@@ -55,27 +55,27 @@ async def get_words():
             await user_lookup(name)
             await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
 
-    try:
-        print("Removing checked words from the word list...")
-        remove_checked_words()
-        print("All done")
-    except errors.FloodWaitError as fW:
-        print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-        await asyncio.sleep(fW.seconds)
-
-    print('''
-    - Username Checker -
-    
-1 = Enter username manually
-2 = Read a list of usernames from the word_lists folder
-    ''')
+    print("Removing checked words from the word list...")
+    remove_checked_words()
+    print("All done")
 
 async def close():
     print("Closing the app.")
     await client.disconnect()
 
+async def display_options():
+    print('''
+    - Username Checker -
+    
+1 = Enter username manually
+2 = Read a list of usernames from the word_lists folder
+3 = Sleep until rate limit is over
+4 = Close the app
+    ''')
+
 async def main():
     while True:
+        await display_options()
         option = input("Select your option: ")
         if option == '2':
             print("Getting usernames from word_lists...")
@@ -83,21 +83,30 @@ async def main():
                 await get_words()
             except errors.FloodWaitError as fW:
                 print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-                await asyncio.sleep(fW.seconds)
-                print('''
-                - Username Checker -
-                
-1 = Enter username manually
-2 = Read a list of usernames from the word_lists folder
-                ''')
-            except Exception as e:
-                print(f"Unhandled error: {e}")
-                await asyncio.sleep(5)
+                while True:
+                    await display_options()
+                    sleep_option = input("Select your option: ")
+                    if sleep_option == '3':
+                        print(f"Sleeping until rate limit is over ({fW.seconds} seconds)...")
+                        await asyncio.sleep(fW.seconds)
+                        break
+                    elif sleep_option == '4':
+                        await close()
+                        return
+                    else:
+                        print("Invalid option. Please enter 3 or 4.")
         elif option == '1':
             # Implement the case for entering username manually
             pass
+        elif option == '3':
+            rate_limit_seconds = int(input("Enter the number of seconds to sleep: "))
+            print(f"Sleeping for {rate_limit_seconds} seconds...")
+            await asyncio.sleep(rate_limit_seconds)
+        elif option == '4':
+            await close()
+            return
         else:
-            print("Invalid option. Please enter 1 or 2.")
+            print("Invalid option. Please enter 1, 2, 3, or 4.")
 
 if __name__ == "__main__":
     try:
