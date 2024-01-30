@@ -1,5 +1,4 @@
 from telethon import TelegramClient, functions, errors
-from telegram.ext import Updater
 import configparser
 import os
 import asyncio
@@ -12,7 +11,6 @@ api_hash = config.get('default', 'api_hash')
 bot_token = config.get('default', 'bot_token')
 
 client = TelegramClient('Checker', api_id, api_hash)
-client.start()
 
 async def user_lookup(account):
     try:
@@ -80,6 +78,7 @@ async def display_options():
     ''')
 
 async def main():
+    await client.start()
     try:
         while True:
             await display_options()
@@ -87,7 +86,7 @@ async def main():
             if option == '1' or option == '2':
                 await get_words()
             elif option == '3':
-                await asyncio.run(sleep_for_24_hours())
+                await sleep_for_24_hours()
             elif option == '4':
                 await close()
             else:
