@@ -26,6 +26,7 @@ dispatcher = updater.dispatcher
 
 def user_lookup(account):
     try:
+        print(f"Checking username: {account}")
         result = client(functions.account.CheckUsernameRequest(username=account))
         log_word(account, "checked_words.txt")  # Log all checked usernames
 
