@@ -28,7 +28,7 @@ def user_lookup(account):
     try:
         print(f"Checking username: {account}")
         result = client(functions.account.CheckUsernameRequest(username=account))
-        log_word(account, "checked_words.txt")  # Log all checked usernames
+        log_word(account, "word_lists/checked_words.txt")  # Log all checked usernames
 
         if result:
             print("The telegram", account, "is available")
