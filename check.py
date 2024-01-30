@@ -8,6 +8,7 @@ config.read('config.ini')
 
 api_id = int(config.get('default', 'api_id'))
 api_hash = config.get('default', 'api_hash')
+bot_token = config.get('default', 'bot_token')
 
 client = TelegramClient('Checker', api_id, api_hash)
 client.start()
@@ -55,23 +56,25 @@ async def get_words():
             await user_lookup(name)
             await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
 
-        while True:
+        print("Removing checked words from the word list...")
+        remove_checked_words()
+        print("All done")
+
+    while True:
+        try:
             await display_options()
             option = input("Select your option: ")
             if option == '3':
-                rate_limit_seconds = int(input("Enter the number of seconds to sleep: "))
-                print(f"Sleeping for {rate_limit_seconds} seconds...")
-                await asyncio.sleep(rate_limit_seconds)
-                break
+                print(f"Hit the rate limit, waiting {fW.seconds} seconds")
+                await asyncio.sleep(fW.seconds)
             elif option == '4':
                 await close()
                 return
             else:
                 print("Invalid option. Please enter 3 or 4.")
-    print("Removing checked words from the word list...")
-    remove_checked_words()
-    print("All done")
-
+        except errors.FloodWaitError as fW:
+            print(f"Hit the rate limit, waiting {fW.seconds} seconds")
+            await asyncio.sleep(fW.seconds)
 
 async def close():
     print("Closing the app.")
@@ -87,44 +90,9 @@ async def display_options():
 4 = Close the app
     ''')
 
-async def main():
-    while True:
-        await display_options()
-        option = input("Select your option: ")
-        if option == '2':
-            print("Getting usernames from word_lists...")
-            try:
-                await get_words()
-            except errors.FloodWaitError as fW:
-                print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-                while True:
-                    await display_options()
-                    sleep_option = input("Select your option: ")
-                    if sleep_option == '3':
-                        print(f"Sleeping until rate limit is over ({fW.seconds} seconds)...")
-                        await asyncio.sleep(fW.seconds)
-                        break
-                    elif sleep_option == '4':
-                        await close()
-                        return
-                    else:
-                        print("Invalid option. Please enter 3 or 4.")
-        elif option == '1':
-            # Implement the case for entering username manually
-            pass
-        elif option == '3':
-            rate_limit_seconds = int(input("Enter the number of seconds to sleep: "))
-            print(f"Sleeping for {rate_limit_seconds} seconds...")
-            await asyncio.sleep(rate_limit_seconds)
-        elif option == '4':
-            await close()
-            return
-        else:
-            print("Invalid option. Please enter 1, 2, 3, or 4.")
-
 if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(main())
+        loop.run_until_complete(get_words())
     except KeyboardInterrupt:
         loop.run_until_complete(close())
