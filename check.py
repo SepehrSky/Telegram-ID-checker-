@@ -22,6 +22,7 @@ async def user_lookup(account):
             print(f"The telegram {account} is not available")
     except errors.FloodWaitError as fW:
         print(f"Hit the rate limit, waiting {fW.seconds} seconds")
+        await asyncio.sleep(fW.seconds)
         await user_lookup(account)
     except errors.UsernameInvalidError as uI:
         print("Username is invalid")
@@ -35,7 +36,7 @@ async def user_lookup(account):
             print(f"The telegram {account} is available")
         elif "FLOOD_WAIT" in bR.message:
             print(f"Hit the rate limit, waiting {bR.seconds} seconds")
-            await user_lookup(account)
+            await asyncio.sleep(bR.seconds)
         else:
             print("Unhandled error:", bR.message)
 
@@ -47,8 +48,12 @@ async def get_words():
             words = file.read().split('\n')
 
         for name in words:
-            await user_lookup(name)
-            await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
+            try:
+                await user_lookup(name)
+                await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
+            except errors.FloodWaitError as fW:
+                print(f"Hit the rate limit, waiting {fW.seconds} seconds")
+                await asyncio.sleep(fW.seconds)
 
         print("Removing checked words from the word list...")
         # Implement remove_checked_words() as needed
@@ -83,12 +88,10 @@ async def main():
             except errors.FloodWaitError as fW:
                 print(f"Hit the rate limit, waiting {fW.seconds} seconds")
                 await asyncio.sleep(fW.seconds)
-                print("Options after rate limit:")
-                await display_options()
             except Exception as e:
                 print(f"Unhandled error: {e}")
-                await asyncio.sleep(5)
-                print("Options after error:")
+            finally:
+                print("Options after operation:")
                 await display_options()
         elif option == '1':
             # Implement the case for entering username manually
