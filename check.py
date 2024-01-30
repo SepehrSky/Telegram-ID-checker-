@@ -81,7 +81,11 @@ async def main():
                 await get_words()
             except errors.FloodWaitError as fW:
                 print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-                await asyncio.sleep(fW.seconds)
+                sleep_option = input("Enter 'c' to close the app or any other key to sleep: ")
+                if sleep_option.lower() == 'c':
+                    await close()
+                else:
+                    await asyncio.sleep(fW.seconds)
             except Exception as e:
                 print(f"Unhandled error: {e}")
                 await asyncio.sleep(5)
