@@ -80,6 +80,10 @@ async def main():
                 print(f"Hit the rate limit, waiting {fW.seconds} seconds")
                 await asyncio.sleep(fW.seconds)
                 continue  # Continue to the next iteration
+            except Exception as e:
+                print(f"Unhandled error: {e}")
+                await asyncio.sleep(5)  # Sleep for 5 seconds before prompting for the next option
+                continue  # Continue to the next iteration
         elif option == '1':
             # Implement the case for entering username manually
             pass
