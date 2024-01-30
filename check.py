@@ -13,7 +13,7 @@ bot_token = config.get('default', 'bot_token')
 client = TelegramClient('Checker', api_id, api_hash)
 client.start()
 
-async def user_lookup(account):
+async def user_lookup(account, retry_count=0):
     try:
         result = await client(functions.account.CheckUsernameRequest(username=account))
         if result:
@@ -23,7 +23,11 @@ async def user_lookup(account):
     except errors.FloodWaitError as fW:
         print(f"Hit the rate limit, waiting {fW.seconds} seconds")
         await asyncio.sleep(fW.seconds)
-        await user_lookup(account)
+        retry_count += 1
+        if retry_count <= 3:  # You can adjust the maximum retry count as needed
+            await user_lookup(account, retry_count)
+        else:
+            print("Maximum retries reached. Exiting.")
     except errors.UsernameInvalidError as uI:
         print("Username is invalid")
     except errors.rpcbaseerrors.BadRequestError as bR:
@@ -37,8 +41,14 @@ async def user_lookup(account):
         elif "FLOOD_WAIT" in bR.message:
             print(f"Hit the rate limit, waiting {bR.seconds} seconds")
             await asyncio.sleep(bR.seconds)
+            retry_count += 1
+            if retry_count <= 3:
+                await user_lookup(account, retry_count)
+            else:
+                print("Maximum retries reached. Exiting.")
         else:
             print("Unhandled error:", bR.message)
+
 
 async def get_words():
     path = os.path.join("word_lists", config.get('default', 'wordList'))
@@ -48,12 +58,8 @@ async def get_words():
             words = file.read().split('\n')
 
         for name in words:
-            try:
-                await user_lookup(name)
-                await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
-            except errors.FloodWaitError as fW:
-                print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-                await asyncio.sleep(fW.seconds)
+            await user_lookup(name)
+            await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
 
         print("Removing checked words from the word list...")
         # Implement remove_checked_words() as needed
@@ -88,10 +94,12 @@ async def main():
             except errors.FloodWaitError as fW:
                 print(f"Hit the rate limit, waiting {fW.seconds} seconds")
                 await asyncio.sleep(fW.seconds)
+                print("Options after rate limit:")
+                await display_options()
             except Exception as e:
                 print(f"Unhandled error: {e}")
-            finally:
-                print("Options after operation:")
+                await asyncio.sleep(5)
+                print("Options after error:")
                 await display_options()
         elif option == '1':
             # Implement the case for entering username manually
