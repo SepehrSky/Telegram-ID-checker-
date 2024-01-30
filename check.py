@@ -82,8 +82,8 @@ if __name__ == "__main__":
         if option == '1' or option == '2':
             loop.run_until_complete(get_words())
         elif option == '3':
-            print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-            await asyncio.sleep(fW.seconds)
+            print("Sleeping until rate limit is over...")
+            await asyncio.sleep(86400)  # Sleep for 24 hours
         elif option == '4':
             loop.run_until_complete(close())
         else:
