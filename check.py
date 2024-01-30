@@ -105,7 +105,7 @@ async def close():
     print("Closing the app.")
     await client.disconnect()
 
-async def main(context):
+async def main(update, context):
     print('''
     ▄▄▄█████▓▓█████  ██▓    ▓█████   ▄████  ██▀███   ▄▄▄       ███▄ ▄███▓
     ▓  ██▒ ▓▒▓█   ▀ ▓██▒    ▓█   ▀  ██▒ ▀█▒▓██ ▒ ██▒▒████▄    ▓██▒▀█▀ ██▒
@@ -136,8 +136,7 @@ Select your option: 2
 
 if __name__ == "__main__":
     try:
-        loop = asyncio.get_event_loop()
-        context = CallbackContext
-        loop.run_until_complete(main(context))
+        updater.start_polling()
+        updater.idle()
     except KeyboardInterrupt:
         loop.run_until_complete(close())
