@@ -36,15 +36,22 @@ def user_lookup(account):
             print("The telegram", account, "is not available")
     except errors.FloodWaitError as fW:
         print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-        time.sleep(fW.seconds)
-        user_lookup(account)
+        action = input("Choose action: (c) close, (s) sleep: ")
+        if action == 'c':
+            print("Closing the app.")
+            exit()
+        elif action == 's':
+            print(f"Putting the app to sleep for {fW.seconds} seconds.")
+            time.sleep(fW.seconds)
+            user_lookup(account)  # This line will be executed after the sleep duration
+        else:
+            print("Invalid choice. Closing the app.")
+            exit()
     except errors.UsernameInvalidError as uI:
         print("Username is invalid")
     except errors.rpcbaseerrors.BadRequestError as bR:
         print("Error:", bR.message)
-    else:
-        # Introduce a sleep duration to stay within the rate limit
-        time.sleep(1 / 30)  # 1/30 seconds per message (adjust as needed)
+
 
 def log_word(word, filename):
     with open(filename, 'a') as file:
