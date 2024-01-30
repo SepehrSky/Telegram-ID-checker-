@@ -7,21 +7,12 @@ import asyncio
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-api_id = config.get('default', 'api_id')
+api_id = int(config.get('default', 'api_id'))
 api_hash = config.get('default', 'api_hash')
 bot_token = config.get('default', 'bot_token')
 
-if api_id == "28228681" or api_hash == "b81a9e939de31be895836571119b490a" or bot_token == "6809340292:AAFGsGdLdtADgt7jsHldV-6wlS7goTkYi6U":
-    print("Please update the config.ini with your API credentials and bot token.")
-    input()
-    exit()
-else:
-    api_id = int(api_id)
-
 client = TelegramClient('Checker', api_id, api_hash)
 client.start()
-
-updater = Updater(bot_token, use_context=True)
 
 async def user_lookup(account):
     try:
@@ -52,7 +43,7 @@ async def user_lookup(account):
             print("Unhandled error:", bR.message)
 
 def remove_checked_words():
-    # Implement the logic to remove checked words from your word list file
+    # Implement this function as needed
     pass
 
 async def get_words():
