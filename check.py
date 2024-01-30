@@ -43,6 +43,14 @@ async def user_lookup(account):
         print("Username is invalid")
     except errors.rpcbaseerrors.BadRequestError as bR:
         print("Error:", bR.message)
+        if "USERNAME_INVALID" in bR.message:
+            print(f"The telegram {account} is invalid")
+        elif "USERNAME_OCCUPIED" in bR.message:
+            print(f"The telegram {account} is already taken")
+        elif "USERNAME_NOT_OCCUPIED" in bR.message:
+            print(f"The telegram {account} is available")
+        else:
+            print("Unhandled error:", bR.message)
 
 def log_word(word, filename):
     with open(filename, 'a') as file:
@@ -96,20 +104,22 @@ async def main():
     ░         ░     ░ ░      ░   ░ ░   ░   ░░   ░   ░   ▒   ░      ░   
                 ░  ░    ░  ░   ░  ░      ░    ░           ░  ░       ░   
     - Username Checker - From 3phrn
-    ''')
+    
+1 = Enter username manually
+2 = Read a list of usernames from the word_lists folder
+Select your option: 2
+''')
 
     while True:
-        print("1 = Enter username manually")
-        print("2 = Read a list of usernames from the word_lists folder")
-        option = input("Select your option: ")
-
-        if option == "1":
-            account = input("Enter the username: ")
-            await user_lookup(account)
-        elif option == "2":
+        print("Getting usernames from word_lists...")
+        try:
             await get_words()
-        else:
-            print("Invalid option. Please select either 1 or 2.")
+        except errors.FloodWaitError as fW:
+            print(f"Hit the rate limit, waiting {fW.seconds} seconds")
+            await asyncio.sleep(fW.seconds)
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            await asyncio.sleep(5)
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
