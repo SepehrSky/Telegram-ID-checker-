@@ -110,12 +110,14 @@ async def main():
             else:
                 print("Getting usernames from word_lists...")
                 await get_words()
-                action = input("Choose action: (c) close, (s) sleep: ")
+                print("Choose action: (c) close, (s) sleep")
+                action = input()
                 if action == "c":
                     await close()  # Close the app
                 elif action == "s":
                     print("Sleeping for 24 hours...")
                     await asyncio.sleep(24 * 60 * 60)  # Sleep for 24 hours
+                    print("Waking up after 24 hours.")
                 else:
                     print("Invalid action. Exiting.")
                 break
