@@ -56,53 +56,20 @@ async def get_words():
     # Implement remove_checked_words() as needed
     print("All done")
 
-    try:
-        await user_lookup("dummy_user")  # Perform a dummy user_lookup to ensure the rate limit is over
-    except errors.FloodWaitError as fW:
-        print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-        while True:
-            try:
-                await user_lookup("dummy_user")  # Continue attempting until the rate limit is over
-            except errors.FloodWaitError as fW_inner:
-                print(f"Hit the rate limit, waiting {fW_inner.seconds} seconds")
-                await asyncio.sleep(fW_inner.seconds)
-            except Exception as e_inner:
-                print(f"Unhandled error: {e_inner}")
-                break
-        print("Removing checked words from the word list...")
-        # Implement remove_checked_words() as needed
-        print("All done")
-    except Exception as e:
-        print(f"Unhandled error: {e}")
-
-
-    try:
-        await user_lookup("dummy_user")  # Perform a dummy user_lookup to ensure the rate limit is over
-    except errors.FloodWaitError as fW:
-        print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-        await asyncio.sleep(fW.seconds)
-        print("Removing checked words from the word list...")
-        # Implement remove_checked_words() as needed
-        print("All done")
-    except Exception as e:
-        print(f"Unhandled error: {e}")
-
-
-    try:
-        await user_lookup("dummy_user")  # Perform a dummy user_lookup to ensure the rate limit is over
-    except errors.FloodWaitError as fW:
-        print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-        await asyncio.sleep(fW.seconds)
-    except Exception as e:
-        print(f"Unhandled error: {e}")
-
-    print("Removing checked words from the word list...")
-    # Implement remove_checked_words() as needed
-    print("All done")
+    # Display options after the rate limit wait
+    await display_options()
 
 async def close():
     print("Closing the app.")
     await client.disconnect()
+
+async def display_options():
+    print('''
+    - Username Checker -
+    
+3 = Sleep until rate limit is over
+4 = Close the app
+    ''')
 
 async def main():
     print('''
@@ -110,8 +77,6 @@ async def main():
     
 1 = Enter username manually
 2 = Read a list of usernames from the word_lists folder
-3 = Sleep until rate limit is over
-4 = Close the app
     ''')
 
     while True:
@@ -123,23 +88,15 @@ async def main():
             except errors.FloodWaitError as fW:
                 print(f"Hit the rate limit, waiting {fW.seconds} seconds")
                 await asyncio.sleep(fW.seconds)
-                await user_lookup("test_user")  # Perform a dummy user_lookup to ensure the rate limit is over
-                await asyncio.sleep(1)  # Introduce a small delay
+                await display_options()
             except Exception as e:
                 print(f"Unhandled error: {e}")
-                await asyncio.sleep(5)  # Sleep for 5 seconds before prompting for the next option
-                continue  # Continue to the next iteration
+                await asyncio.sleep(5)
         elif option == '1':
             # Implement the case for entering username manually
             pass
-        elif option == '3':
-            print("Sleeping until rate limit is over...")
-            await asyncio.sleep(600)  # Sleep for 10 minutes as an example
-        elif option == '4':
-            await close()
-            break
         else:
-            print("Invalid option. Please enter 1, 2, 3, or 4.")
+            print("Invalid option. Please enter 1 or 2.")
 
 if __name__ == "__main__":
     try:
