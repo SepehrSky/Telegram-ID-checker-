@@ -89,12 +89,11 @@ async def main():
             except errors.FloodWaitError as fW:
                 print(f"Hit the rate limit, waiting {fW.seconds} seconds")
                 await asyncio.sleep(fW.seconds)
-                print("Options after rate limit:")
-                await display_options()
             except Exception as e:
                 print(f"Unhandled error: {e}")
                 await asyncio.sleep(5)
-                print("Options after error:")
+            finally:
+                print("Options after operation:")
                 await display_options()
         elif option == '1':
             # Implement the case for entering username manually
