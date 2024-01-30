@@ -11,7 +11,7 @@ api_id = config.get('default', 'api_id')
 api_hash = config.get('default', 'api_hash')
 bot_token = config.get('default', 'bot_token')
 
-if api_id == 28228681 or api_hash == b81a9e939de31be895836571119b490a or bot_token == 6809340292:AAFGsGdLdtADgt7jsHldV-6wlS7goTkYi6U:
+if api_id == "28228681" or api_hash == "b81a9e939de31be895836571119b490a" or bot_token == "6809340292:AAFGsGdLdtADgt7jsHldV-6wlS7goTkYi6U":
     print("Please update the config.ini with your API credentials and bot token.")
     input()
     exit()
