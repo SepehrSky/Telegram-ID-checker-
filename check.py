@@ -1,8 +1,6 @@
-from telethon import TelegramClient, sync, functions, errors
+from telethon import TelegramClient, functions, errors
 from telegram.ext import CommandHandler, Updater
-from telegram import Update
 import configparser
-import time
 import os
 import asyncio
 
@@ -25,36 +23,46 @@ else:
 updater = Updater(bot_token, use_context=True)
 dispatcher = updater.dispatcher
 
-async def user_lookup(account):
+async def user_lookup(account, context):
     try:
         result = await client(functions.account.CheckUsernameRequest(username=account))
         log_word(account, "checked_words.txt")  # Log all checked usernames
 
         if result:
-            print("The telegram", account, "is available")
+            message = f"The telegram {account} is available"
+            context.bot.send_message(chat_id=context.message.chat_id, text=message)
             log_word(account, "Available.txt")  # Log available usernames
         else:
-            print("The telegram", account, "is not available")
+            message = f"The telegram {account} is not available"
+            context.bot.send_message(chat_id=context.message.chat_id, text=message)
     except errors.FloodWaitError as fW:
-        print(f"Hit the rate limit, waiting {fW.seconds} seconds")
+        message = f"Hit the rate limit, waiting {fW.seconds} seconds"
+        context.bot.send_message(chat_id=context.message.chat_id, text=message)
         await asyncio.sleep(fW.seconds)
-        await user_lookup(account)
+        await user_lookup(account, context)
     except errors.UsernameInvalidError as uI:
-        print("Username is invalid")
+        message = "Username is invalid"
+        context.bot.send_message(chat_id=context.message.chat_id, text=message)
     except errors.rpcbaseerrors.BadRequestError as bR:
-        print("Error:", bR.message)
+        message = f"Error: {bR.message}"
+        context.bot.send_message(chat_id=context.message.chat_id, text=message)
         if "USERNAME_INVALID" in bR.message:
-            print(f"The telegram {account} is invalid")
+            message = f"The telegram {account} is invalid"
+            context.bot.send_message(chat_id=context.message.chat_id, text=message)
         elif "USERNAME_OCCUPIED" in bR.message:
-            print(f"The telegram {account} is already taken")
+            message = f"The telegram {account} is already taken"
+            context.bot.send_message(chat_id=context.message.chat_id, text=message)
         elif "USERNAME_NOT_OCCUPIED" in bR.message:
-            print(f"The telegram {account} is available")
+            message = f"The telegram {account} is available"
+            context.bot.send_message(chat_id=context.message.chat_id, text=message)
         elif "FLOOD_WAIT" in bR.message:
-            print(f"Hit the rate limit, waiting {bR.seconds} seconds")
+            message = f"Hit the rate limit, waiting {bR.seconds} seconds"
+            context.bot.send_message(chat_id=context.message.chat_id, text=message)
             await asyncio.sleep(bR.seconds)
-            await user_lookup(account)
+            await user_lookup(account, context)
         else:
-            print("Unhandled error:", bR.message)
+            message = f"Unhandled error: {bR.message}"
+            context.bot.send_message(chat_id=context.message.chat_id, text=message)
 
 def log_word(word, filename):
     with open(filename, 'a') as file:
@@ -85,7 +93,7 @@ async def get_words():
             words = file.read().split('\n')
 
         for name in words:
-            await user_lookup(name)
+            await user_lookup(name, context)
             await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
 
     print("Removing checked words from the word list...")
