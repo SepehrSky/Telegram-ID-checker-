@@ -73,6 +73,10 @@ async def display_options():
     
 1 = Enter username manually
 2 = Read a list of usernames from the word_lists folder
+    ''')
+
+async def display_sleep_close_options():
+    print('''
 3 = Sleep until rate limit is over
 4 = Close the app
     ''')
@@ -85,12 +89,17 @@ async def main():
             option = input("Select your option: ")
             if option == '1' or option == '2':
                 await get_words()
-            elif option == '3':
-                await sleep_for_24_hours()
-            elif option == '4':
-                await close()
+            elif option == '3' or option == '4':
+                await display_sleep_close_options()
+                option = input("Select your option: ")
+                if option == '3':
+                    await sleep_for_24_hours()
+                elif option == '4':
+                    await close()
+                else:
+                    print("Invalid option. Please enter 3 or 4.")
             else:
-                print("Invalid option. Please enter 1, 2, 3, or 4.")
+                print("Invalid option. Please enter 1 or 2.")
     except KeyboardInterrupt:
         await close()
 
