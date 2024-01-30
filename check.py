@@ -56,6 +56,18 @@ async def get_words():
     # Implement remove_checked_words() as needed
     print("All done")
 
+    try:
+        await user_lookup("dummy_user")  # Perform a dummy user_lookup to ensure the rate limit is over
+    except errors.FloodWaitError as fW:
+        print(f"Hit the rate limit, waiting {fW.seconds} seconds")
+        await asyncio.sleep(fW.seconds)
+    except Exception as e:
+        print(f"Unhandled error: {e}")
+
+    print("Removing checked words from the word list...")
+    # Implement remove_checked_words() as needed
+    print("All done")
+
 async def close():
     print("Closing the app.")
     await client.disconnect()
