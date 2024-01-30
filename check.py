@@ -1,5 +1,6 @@
 from telethon import TelegramClient, functions, errors
-from telegram.ext import CommandHandler, Updater
+from telegram.ext import CommandHandler, Updater, MessageHandler, Filters
+from telegram import Update
 import configparser
 import os
 import asyncio
@@ -84,7 +85,7 @@ def remove_checked_words():
         with open(word_list_path, 'w', encoding='utf-8-sig') as updated_file:
             updated_file.write('\n'.join(remaining_words))
 
-async def get_words():
+async def get_words(context):
     delay = config.get('default', 'delay')
     path = os.path.join("word_lists", config.get('default', 'wordList'))
 
@@ -104,7 +105,7 @@ async def close():
     print("Closing the app.")
     await client.disconnect()
 
-async def main():
+async def main(context):
     print('''
     ▄▄▄█████▓▓█████  ██▓    ▓█████   ▄████  ██▀███   ▄▄▄       ███▄ ▄███▓
     ▓  ██▒ ▓▒▓█   ▀ ▓██▒    ▓█   ▀  ██▒ ▀█▒▓██ ▒ ██▒▒████▄    ▓██▒▀█▀ ██▒
@@ -119,23 +120,28 @@ async def main():
     
 1 = Enter username manually
 2 = Read a list of usernames from the word_lists folder
-Select your option: 2
 ''')
 
     while True:
-        print("Getting usernames from word_lists...")
-        try:
-            await get_words()
-        except errors.FloodWaitError as fW:
-            print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-            await asyncio.sleep(fW.seconds)
-        except Exception as e:
-            print(f"Unhandled error: {e}")
-            await asyncio.sleep(5)
+        option = input("Select your option: ")
+        if option == '1':
+            username = input("Enter the username: ")
+            await user_lookup(username, context)
+        elif option == '2':
+            print("Getting usernames from word_lists...")
+            try:
+                await get_words(context)
+            except errors.FloodWaitError as fW:
+                print(f"Hit the rate limit, waiting {fW.seconds} seconds")
+                await asyncio.sleep(fW.seconds)
+            except Exception as e:
+                print(f"Unhandled error: {e}")
+                await asyncio.sleep(5)
 
 if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(main())
+        context = None
+        loop.run_until_complete(main(context))
     except KeyboardInterrupt:
         loop.run_until_complete(close())
