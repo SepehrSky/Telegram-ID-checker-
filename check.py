@@ -78,14 +78,10 @@ async def main():
             print("Getting usernames from word_lists...")
             try:
                 await get_words()
+                await display_options()
             except errors.FloodWaitError as fW:
                 print(f"Hit the rate limit, waiting {fW.seconds} seconds")
                 await asyncio.sleep(fW.seconds)
-                await display_options()
-            except Exception as e:
-                print(f"Unhandled error: {e}")
-                await asyncio.sleep(5)
-                await display_options()
         elif option == '1':
             # Implement the case for entering username manually
             pass
