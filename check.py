@@ -55,9 +55,23 @@ async def get_words():
             await user_lookup(name)
             await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
 
+        while True:
+            await display_options()
+            option = input("Select your option: ")
+            if option == '3':
+                rate_limit_seconds = int(input("Enter the number of seconds to sleep: "))
+                print(f"Sleeping for {rate_limit_seconds} seconds...")
+                await asyncio.sleep(rate_limit_seconds)
+                break
+            elif option == '4':
+                await close()
+                return
+            else:
+                print("Invalid option. Please enter 3 or 4.")
     print("Removing checked words from the word list...")
     remove_checked_words()
     print("All done")
+
 
 async def close():
     print("Closing the app.")
