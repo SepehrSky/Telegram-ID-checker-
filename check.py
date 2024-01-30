@@ -60,20 +60,14 @@ async def close():
     print("Closing the app.")
     await client.disconnect()
 
-async def display_options():
-    print('''
-    - Username Checker -
-    
-3 = Sleep until rate limit is over
-4 = Close the app
-    ''')
-
 async def main():
     print('''
     - Username Checker -
     
 1 = Enter username manually
 2 = Read a list of usernames from the word_lists folder
+3 = Sleep until rate limit is over
+4 = Close the app
     ''')
 
     while True:
@@ -85,15 +79,17 @@ async def main():
             except errors.FloodWaitError as fW:
                 print(f"Hit the rate limit, waiting {fW.seconds} seconds")
                 await asyncio.sleep(fW.seconds)
-                await display_options()
-            except Exception as e:
-                print(f"Unhandled error: {e}")
-                await asyncio.sleep(5)
         elif option == '1':
             # Implement the case for entering username manually
             pass
+        elif option == '3':
+            print("Sleeping until rate limit is over...")
+            await asyncio.sleep(600)  # Sleep for 10 minutes as an example
+        elif option == '4':
+            await close()
+            break
         else:
-            print("Invalid option. Please enter 1 or 2.")
+            print("Invalid option. Please enter 1, 2, 3, or 4.")
 
 if __name__ == "__main__":
     try:
