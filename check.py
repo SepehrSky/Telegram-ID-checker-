@@ -93,7 +93,7 @@ async def display_options():
 if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
-        await display_options()
+        loop.run_until_complete(display_options())
         option = input("Select your option: ")
         if option == '1' or option == '2':
             loop.run_until_complete(get_words())
