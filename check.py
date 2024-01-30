@@ -85,11 +85,18 @@ async def main():
             except Exception as e:
                 print(f"Unhandled error: {e}")
                 await asyncio.sleep(5)
+                await display_options()
         elif option == '1':
             # Implement the case for entering username manually
             pass
+        elif option == '3':
+            print("Sleep until rate limit is over")
+            await asyncio.sleep(5)  # You can adjust the sleep time as needed
+            await display_options()
+        elif option == '4':
+            await close()
         else:
-            print("Invalid option. Please enter 1 or 2.")
+            print("Invalid option. Please enter 1, 2, 3, or 4.")
 
 if __name__ == "__main__":
     try:
