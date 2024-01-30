@@ -41,7 +41,7 @@ async def user_lookup(account):
         else:
             print("Unhandled error:", bR.message)
 
-def remove_checked_words():
+async def remove_checked_words():
     # Implement this function as needed
     pass
 
@@ -57,7 +57,7 @@ async def get_words():
             await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
 
         print("Removing checked words from the word list...")
-        remove_checked_words()
+        await remove_checked_words()
         print("All done")
 
     while True:
@@ -93,6 +93,16 @@ async def display_options():
 if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(get_words())
+        await display_options()
+        option = input("Select your option: ")
+        if option == '1' or option == '2':
+            loop.run_until_complete(get_words())
+        elif option == '3':
+            print(f"Hit the rate limit, waiting {fW.seconds} seconds")
+            await asyncio.sleep(fW.seconds)
+        elif option == '4':
+            loop.run_until_complete(close())
+        else:
+            print("Invalid option. Please enter 1, 2, 3, or 4.")
     except KeyboardInterrupt:
         loop.run_until_complete(close())
