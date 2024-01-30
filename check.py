@@ -49,6 +49,10 @@ async def user_lookup(account):
             print(f"The telegram {account} is already taken")
         elif "USERNAME_NOT_OCCUPIED" in bR.message:
             print(f"The telegram {account} is available")
+        elif "FLOOD_WAIT" in bR.message:
+            print(f"Hit the rate limit, waiting {bR.seconds} seconds")
+            await asyncio.sleep(bR.seconds)
+            await user_lookup(account)
         else:
             print("Unhandled error:", bR.message)
 
@@ -118,9 +122,12 @@ Select your option: 2
             print(f"Hit the rate limit, waiting {fW.seconds} seconds")
             await asyncio.sleep(fW.seconds)
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"Unhandled error: {e}")
             await asyncio.sleep(5)
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    try:
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(main())
+    except KeyboardInterrupt:
+        loop.run_until_complete(close())
