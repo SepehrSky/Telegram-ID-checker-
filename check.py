@@ -73,6 +73,10 @@ async def display_options():
     
 1 = Enter username manually
 2 = Read a list of usernames from the word_lists folder
+    ''')
+
+async def display_extended_options():
+    print('''
 3 = Sleep until rate limit is over
 4 = Close the app
     ''')
@@ -91,18 +95,17 @@ async def main():
                 except errors.FloodWaitError as fW:
                     print(f"Hit the rate limit, waiting {fW.seconds} seconds")
                     await asyncio.sleep(fW.seconds)
+                    await display_extended_options()
+                    sub_option = input("Select your option: ")
+                    if sub_option == '3':
+                        await sleep_for_24_hours()
+                    elif sub_option == '4':
+                        await close()
+                    else:
+                        print("Invalid option. Please enter 3 or 4.")
                 except Exception as e:
                     print(f"Unhandled error: {e}")
                     await asyncio.sleep(5)
-            elif option == '3' or option == '4':
-                await display_options()
-                sub_option = input("Select your option: ")
-                if sub_option == '3':
-                    await sleep_for_24_hours()
-                elif sub_option == '4':
-                    await close()
-                else:
-                    print("Invalid option. Please enter 3 or 4.")
             else:
                 print("Invalid option. Please enter 1 or 2.")
     except KeyboardInterrupt:
