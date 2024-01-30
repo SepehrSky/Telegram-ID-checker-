@@ -1,4 +1,5 @@
 from telethon import TelegramClient, functions, errors
+from telegram.ext import Updater
 import configparser
 import os
 import asyncio
@@ -56,13 +57,17 @@ async def get_words():
             await user_lookup(name)
             await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
 
-        print("Removing checked words from the word list...")
-        await remove_checked_words()
-        print("All done")
+    print("Removing checked words from the word list...")
+    await remove_checked_words()
+    print("All done")
 
 async def close():
     print("Closing the app.")
     await client.disconnect()
+
+async def sleep_for_24_hours():
+    print("Sleeping until rate limit is over...")
+    await asyncio.sleep(86400)  # Sleep for 24 hours
 
 async def display_options():
     print('''
@@ -74,19 +79,21 @@ async def display_options():
 4 = Close the app
     ''')
 
-if __name__ == "__main__":
+async def main():
     try:
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(display_options())
-        option = input("Select your option: ")
-        if option == '1' or option == '2':
-            loop.run_until_complete(get_words())
-        elif option == '3':
-            print("Sleeping until rate limit is over...")
-            await asyncio.sleep(86400)  # Sleep for 24 hours
-        elif option == '4':
-            loop.run_until_complete(close())
-        else:
-            print("Invalid option. Please enter 1, 2, 3, or 4.")
+        while True:
+            await display_options()
+            option = input("Select your option: ")
+            if option == '1' or option == '2':
+                await get_words()
+            elif option == '3':
+                await asyncio.run(sleep_for_24_hours())
+            elif option == '4':
+                await close()
+            else:
+                print("Invalid option. Please enter 1, 2, 3, or 4.")
     except KeyboardInterrupt:
-        loop.run_until_complete(close())
+        await close()
+
+if __name__ == "__main__":
+    asyncio.run(main())
