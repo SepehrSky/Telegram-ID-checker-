@@ -11,6 +11,7 @@ api_hash = config.get('default', 'api_hash')
 bot_token = config.get('default', 'bot_token')
 
 client = TelegramClient('Checker', api_id, api_hash)
+client.start()
 
 async def user_lookup(account):
     try:
@@ -40,10 +41,6 @@ async def user_lookup(account):
         else:
             print("Unhandled error:", bR.message)
 
-async def remove_checked_words():
-    # Implement this function as needed
-    pass
-
 async def get_words():
     path = os.path.join("word_lists", config.get('default', 'wordList'))
 
@@ -56,60 +53,51 @@ async def get_words():
             await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
 
     print("Removing checked words from the word list...")
-    await remove_checked_words()
+    # Implement remove_checked_words() as needed
     print("All done")
 
 async def close():
     print("Closing the app.")
     await client.disconnect()
 
-async def sleep_for_24_hours():
-    print("Sleeping until rate limit is over...")
-    await asyncio.sleep(86400)  # Sleep for 24 hours
-
-async def display_extended_options():
+async def display_options():
     print('''
-    - Extended Options -
+    - Username Checker -
     
 3 = Sleep until rate limit is over
 4 = Close the app
     ''')
 
 async def main():
-    await client.start()
-    try:
-        while True:
-            print('''
+    print('''
     - Username Checker -
     
 1 = Enter username manually
 2 = Read a list of usernames from the word_lists folder
-            ''')
-            option = input("Select your option: ")
-            if option == '1' or option == '2':
+    ''')
+
+    while True:
+        option = input("Select your option: ")
+        if option == '2':
+            print("Getting usernames from word_lists...")
+            try:
                 await get_words()
-            elif option == '2':
-                try:
-                    await client(functions.updates.GetStateRequest())
-                except errors.FloodWaitError as fW:
-                    print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-                    await asyncio.sleep(fW.seconds)
-                    await display_extended_options()
-                    sub_option = input("Select your option: ")
-                    if sub_option == '3':
-                        await sleep_for_24_hours()
-                    elif sub_option == '4':
-                        await close()
-                    else:
-                        print("Invalid option. Please enter 3 or 4.")
-                except Exception as e:
-                    print(f"Unhandled error: {e}")
-                    await asyncio.sleep(5)
-            else:
-                print("Invalid option. Please enter 1 or 2.")
-    except KeyboardInterrupt:
-        await close()
+            except errors.FloodWaitError as fW:
+                print(f"Hit the rate limit, waiting {fW.seconds} seconds")
+                await asyncio.sleep(fW.seconds)
+                await display_options()
+            except Exception as e:
+                print(f"Unhandled error: {e}")
+                await asyncio.sleep(5)
+        elif option == '1':
+            # Implement the case for entering username manually
+            pass
+        else:
+            print("Invalid option. Please enter 1 or 2.")
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    try:
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(main())
+    except KeyboardInterrupt:
+        loop.run_until_complete(close())
