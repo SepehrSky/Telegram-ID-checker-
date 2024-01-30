@@ -57,15 +57,14 @@ async def get_words():
             await user_lookup(name)
             await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
 
-    print("Removing checked words from the word list...")
-    remove_checked_words()
-    print("All done")
+    try:
+        print("Removing checked words from the word list...")
+        remove_checked_words()
+        print("All done")
+    except errors.FloodWaitError as fW:
+        print(f"Hit the rate limit, waiting {fW.seconds} seconds")
+        await asyncio.sleep(fW.seconds)
 
-async def close():
-    print("Closing the app.")
-    await client.disconnect()
-
-async def main():
     print('''
     - Username Checker -
     
@@ -73,6 +72,11 @@ async def main():
 2 = Read a list of usernames from the word_lists folder
     ''')
 
+async def close():
+    print("Closing the app.")
+    await client.disconnect()
+
+async def main():
     while True:
         option = input("Select your option: ")
         if option == '2':
@@ -81,11 +85,7 @@ async def main():
                 await get_words()
             except errors.FloodWaitError as fW:
                 print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-                sleep_option = input("Enter 'c' to close the app or any other key to sleep: ")
-                if sleep_option.lower() == 'c':
-                    await close()
-                else:
-                    await asyncio.sleep(fW.seconds)
+                await asyncio.sleep(fW.seconds)
             except Exception as e:
                 print(f"Unhandled error: {e}")
                 await asyncio.sleep(5)
