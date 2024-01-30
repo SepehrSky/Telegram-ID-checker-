@@ -79,6 +79,7 @@ async def main():
             except errors.FloodWaitError as fW:
                 print(f"Hit the rate limit, waiting {fW.seconds} seconds")
                 await asyncio.sleep(fW.seconds)
+                continue  # Continue to the next iteration
         elif option == '1':
             # Implement the case for entering username manually
             pass
