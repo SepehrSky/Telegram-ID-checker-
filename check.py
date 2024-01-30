@@ -1,5 +1,5 @@
 from telethon import TelegramClient, functions, errors
-from telegram.ext import CommandHandler, Updater, MessageHandler, Filters
+from telegram.ext import CommandHandler, Updater, MessageHandler, Filters, ContextTypes
 from telegram import Update
 import configparser
 import os
@@ -105,7 +105,7 @@ async def close():
     print("Closing the app.")
     await client.disconnect()
 
-async def main(context):
+async def main():
     print('''
     ▄▄▄█████▓▓█████  ██▓    ▓█████   ▄████  ██▀███   ▄▄▄       ███▄ ▄███▓
     ▓  ██▒ ▓▒▓█   ▀ ▓██▒    ▓█   ▀  ██▒ ▀█▒▓██ ▒ ██▒▒████▄    ▓██▒▀█▀ ██▒
@@ -120,28 +120,24 @@ async def main(context):
     
 1 = Enter username manually
 2 = Read a list of usernames from the word_lists folder
+Select your option: 2
 ''')
 
     while True:
-        option = input("Select your option: ")
-        if option == '1':
-            username = input("Enter the username: ")
-            await user_lookup(username, context)
-        elif option == '2':
-            print("Getting usernames from word_lists...")
-            try:
-                await get_words(context)
-            except errors.FloodWaitError as fW:
-                print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-                await asyncio.sleep(fW.seconds)
-            except Exception as e:
-                print(f"Unhandled error: {e}")
-                await asyncio.sleep(5)
+        print("Getting usernames from word_lists...")
+        try:
+            await get_words(context)
+        except errors.FloodWaitError as fW:
+            print(f"Hit the rate limit, waiting {fW.seconds} seconds")
+            await asyncio.sleep(fW.seconds)
+        except Exception as e:
+            print(f"Unhandled error: {e}")
+            await asyncio.sleep(5)
 
 if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
-        context = None
+        context = ContextTypes.CHAT
         loop.run_until_complete(main(context))
     except KeyboardInterrupt:
         loop.run_until_complete(close())
