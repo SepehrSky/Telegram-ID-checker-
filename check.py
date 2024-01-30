@@ -98,11 +98,12 @@ async def main():
     - Username Checker - From 3phrn
     ''')
 
-    print("1 = Enter username manually\n2 = Read a list of usernames from the word_lists folder")
     set_options = ["1", "2"]
 
     while True:
+        print("1 = Enter username manually\n2 = Read a list of usernames from the word_lists folder")
         option = input("Select your option: ")
+
         if option in set_options:
             if option == set_options[0]:
                 name = input("Enter a username: ")
@@ -125,7 +126,7 @@ async def main():
                     else:
                         print("Invalid action. Please choose (c) close or (s) sleep.")
         else:
-            print("1 or 2 ... Please!")
+            print("Please select either 1 or 2.")
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
