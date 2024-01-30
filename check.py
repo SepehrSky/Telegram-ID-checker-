@@ -13,7 +13,11 @@ bot_token = config.get('default', 'bot_token')
 client = TelegramClient('Checker', api_id, api_hash)
 client.start()
 
+rate_limit_hit = False
+
 async def user_lookup(account):
+    global rate_limit_hit
+
     try:
         result = await client(functions.account.CheckUsernameRequest(username=account))
         if result:
@@ -23,6 +27,7 @@ async def user_lookup(account):
     except errors.FloodWaitError as fW:
         print(f"Hit the rate limit, waiting {fW.seconds} seconds")
         await asyncio.sleep(fW.seconds)
+        rate_limit_hit = True
         await user_lookup(account)
     except errors.UsernameInvalidError as uI:
         print("Username is invalid")
@@ -37,30 +42,33 @@ async def user_lookup(account):
         elif "FLOOD_WAIT" in bR.message:
             print(f"Hit the rate limit, waiting {bR.seconds} seconds")
             await asyncio.sleep(bR.seconds)
+            rate_limit_hit = True
             await user_lookup(account)
         else:
             print("Unhandled error:", bR.message)
 
 async def get_words():
+    global rate_limit_hit
     path = os.path.join("word_lists", config.get('default', 'wordList'))
 
     if path is not None:
         with open(path, 'r', encoding='utf-8-sig') as file:
             words = file.read().split('\n')
 
-        print_options = True
-
         for name in words:
+            if rate_limit_hit:
+                break
+
             try:
                 await user_lookup(name)
                 await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
             except errors.FloodWaitError as fW:
                 print(f"Hit the rate limit, waiting {fW.seconds} seconds")
                 await asyncio.sleep(fW.seconds)
-                print_options = False
+                rate_limit_hit = True
                 break
 
-        if print_options:
+        if not rate_limit_hit:
             await display_options()
 
     print("Removing checked words from the word list...")
@@ -80,6 +88,8 @@ async def display_options():
     ''')
 
 async def main():
+    global rate_limit_hit
+
     print('''
     - Username Checker -
     
