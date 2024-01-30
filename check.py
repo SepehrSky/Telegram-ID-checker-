@@ -60,22 +60,6 @@ async def get_words():
         await remove_checked_words()
         print("All done")
 
-    while True:
-        try:
-            await display_options()
-            option = input("Select your option: ")
-            if option == '3':
-                print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-                await asyncio.sleep(fW.seconds)
-            elif option == '4':
-                await close()
-                return
-            else:
-                print("Invalid option. Please enter 3 or 4.")
-        except errors.FloodWaitError as fW:
-            print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-            await asyncio.sleep(fW.seconds)
-
 async def close():
     print("Closing the app.")
     await client.disconnect()
