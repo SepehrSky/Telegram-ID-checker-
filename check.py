@@ -1,5 +1,6 @@
-from telethon import TelegramClient, functions, errors
+from telethon import TelegramClient, sync, functions, errors
 from telegram.ext import CommandHandler, Updater
+from telegram import Update
 import configparser
 import time
 import os
@@ -41,9 +42,12 @@ def user_lookup(account):
         print("Username is invalid")
     except errors.rpcbaseerrors.BadRequestError as bR:
         print("Error:", bR.message)
+    else:
+        # Introduce a sleep duration to stay within the rate limit
+        time.sleep(1 / 30)  # 1/30 seconds per message (adjust as needed)
 
 def log_word(word, filename):
-    with open(os.path.join("word_lists", filename), 'a') as file:
+    with open(filename, 'a') as file:
         file.write(f"{word}\n")
 
 def remove_checked_words():
@@ -54,19 +58,15 @@ def remove_checked_words():
         with open(checked_path, 'r', encoding='utf-8-sig') as checked_file:
             checked_words = checked_file.read().split('\n')
 
-        print("Checked Words:", checked_words)
-
         with open(word_list_path, 'r', encoding='utf-8-sig') as word_list_file:
             word_list = word_list_file.read().split('\n')
 
         remaining_words = [word for word in word_list if word not in checked_words]
 
-        print("Remaining Words:", remaining_words)
-
         with open(word_list_path, 'w', encoding='utf-8-sig') as updated_file:
             updated_file.write('\n'.join(remaining_words))
 
-def get_words(update, context):
+def get_words(update: Update, context):
     delay = config.get('default', 'delay')
     path = os.path.join("word_lists", config.get('default', 'wordList'))
 
