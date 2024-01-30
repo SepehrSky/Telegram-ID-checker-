@@ -67,34 +67,37 @@ async def sleep_for_24_hours():
     print("Sleeping until rate limit is over...")
     await asyncio.sleep(86400)  # Sleep for 24 hours
 
-async def display_options():
-    print('''
-    - Username Checker -
-    
-1 = Enter username manually
-2 = Read a list of usernames from the word_lists folder
-    ''')
-
-async def display_sleep_close_options():
-    print('''
-3 = Sleep until rate limit is over
-4 = Close the app
-    ''')
-
 async def main():
     await client.start()
     try:
         while True:
-            await display_options()
+            print('''
+    - Username Checker -
+    
+1 = Enter username manually
+2 = Read a list of usernames from the word_lists folder
+            ''')
             option = input("Select your option: ")
             if option == '1' or option == '2':
                 await get_words()
+            elif option == '2':
+                try:
+                    await client(functions.updates.GetStateRequest())
+                except errors.FloodWaitError as fW:
+                    print(f"Hit the rate limit, waiting {fW.seconds} seconds")
+                    await asyncio.sleep(fW.seconds)
+                except Exception as e:
+                    print(f"Unhandled error: {e}")
+                    await asyncio.sleep(5)
             elif option == '3' or option == '4':
-                await display_sleep_close_options()
-                option = input("Select your option: ")
-                if option == '3':
+                print('''
+    3 = Sleep until rate limit is over
+    4 = Close the app
+                ''')
+                sub_option = input("Select your option: ")
+                if sub_option == '3':
                     await sleep_for_24_hours()
-                elif option == '4':
+                elif sub_option == '4':
                     await close()
                 else:
                     print("Invalid option. Please enter 3 or 4.")
