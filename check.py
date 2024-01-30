@@ -98,35 +98,18 @@ async def main():
     - Username Checker - From 3phrn
     ''')
 
-    set_options = ["1", "2"]
-
     while True:
-        print("1 = Enter username manually\n2 = Read a list of usernames from the word_lists folder")
+        print("1 = Enter username manually")
+        print("2 = Read a list of usernames from the word_lists folder")
         option = input("Select your option: ")
 
-        if option in set_options:
-            if option == set_options[0]:
-                name = input("Enter a username: ")
-                await user_lookup(name)
-            else:
-                print("Getting usernames from word_lists...")
-                await get_words()
-
-                while True:
-                    print("Choose action: (c) close, (s) sleep")
-                    action = input()
-                    if action == "c":
-                        await close()  # Close the app
-                        return
-                    elif action == "s":
-                        print("Sleeping for 24 hours...")
-                        await asyncio.sleep(24 * 60 * 60)  # Sleep for 24 hours
-                        print("Waking up after 24 hours.")
-                        break
-                    else:
-                        print("Invalid action. Please choose (c) close or (s) sleep.")
+        if option == "1":
+            account = input("Enter the username: ")
+            await user_lookup(account)
+        elif option == "2":
+            await get_words()
         else:
-            print("Please select either 1 or 2.")
+            print("Invalid option. Please select either 1 or 2.")
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
