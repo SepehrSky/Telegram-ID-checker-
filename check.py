@@ -79,7 +79,8 @@ async def main():
             except errors.FloodWaitError as fW:
                 print(f"Hit the rate limit, waiting {fW.seconds} seconds")
                 await asyncio.sleep(fW.seconds)
-                continue  # Continue to the next iteration
+                await user_lookup("test_user")  # Perform a dummy user_lookup to ensure the rate limit is over
+                await asyncio.sleep(1)  # Introduce a small delay
             except Exception as e:
                 print(f"Unhandled error: {e}")
                 await asyncio.sleep(5)  # Sleep for 5 seconds before prompting for the next option
