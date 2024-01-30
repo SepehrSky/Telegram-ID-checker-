@@ -67,7 +67,7 @@ def get_words():
 
         for name in words:
             user_lookup(name)
-            time.sleep(int(delay))
+            time.sleep(1 / 30)  # Sleep for 1/30 seconds between requests
 
     print("Removing checked words from the word list...")
     remove_checked_words()
