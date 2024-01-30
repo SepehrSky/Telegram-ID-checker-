@@ -67,16 +67,10 @@ async def sleep_for_24_hours():
     print("Sleeping until rate limit is over...")
     await asyncio.sleep(86400)  # Sleep for 24 hours
 
-async def display_options():
-    print('''
-    - Username Checker -
-    
-1 = Enter username manually
-2 = Read a list of usernames from the word_lists folder
-    ''')
-
 async def display_extended_options():
     print('''
+    - Extended Options -
+    
 3 = Sleep until rate limit is over
 4 = Close the app
     ''')
@@ -85,7 +79,12 @@ async def main():
     await client.start()
     try:
         while True:
-            await display_options()
+            print('''
+    - Username Checker -
+    
+1 = Enter username manually
+2 = Read a list of usernames from the word_lists folder
+            ''')
             option = input("Select your option: ")
             if option == '1' or option == '2':
                 await get_words()
