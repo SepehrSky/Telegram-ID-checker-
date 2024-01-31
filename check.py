@@ -47,6 +47,7 @@ async def get_words():
                 elif option == '4':
                     print("Closing the app.")
                     await close()
+                    return  # Exit the loop if the app is closed
 
     print("Removing checked words from the word list...")
     # Implement remove_checked_words() as needed
