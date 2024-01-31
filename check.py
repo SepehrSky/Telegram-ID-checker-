@@ -13,7 +13,7 @@ bot_token = config.get('default', 'bot_token')
 client = TelegramClient('Checker', api_id, api_hash)
 client.start()
 
-async def user_lookup(account):
+async def user_lookup(account, retry_counter=0):
     try:
         result = await client(functions.account.CheckUsernameRequest(username=account))
         if result:
@@ -34,14 +34,21 @@ async def get_words():
         with open(path, 'r', encoding='utf-8-sig') as file:
             words = file.read().split('\n')
 
+        retry_counter = 0
         for name in words:
             rate_limit_hit = True
             while rate_limit_hit:
-                rate_limit_hit = await user_lookup(name)
+                rate_limit_hit = await user_lookup(name, retry_counter)
                 if rate_limit_hit:
                     await asyncio.sleep(rate_limit_hit)  # Introduce the delay specified by rate limit
+                    retry_counter += 1
+                    if retry_counter >= 3:
+                        print("Options after hitting maximum retries:")
+                        await display_options()
+                        return
                 else:
                     print("Rate limit is over. Resuming...")
+                    retry_counter = 0
                     break
 
     print("Removing checked words from the word list...")
