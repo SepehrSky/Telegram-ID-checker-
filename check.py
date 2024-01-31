@@ -71,6 +71,7 @@ async def get_words():
 async def close():
     print("Closing the app.")
     await client.disconnect()
+    loop.stop()
 
 async def display_options():
     print('''
