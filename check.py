@@ -39,7 +39,7 @@ async def get_words():
             while rate_limit_hit:
                 rate_limit_hit = await user_lookup(name)
                 if rate_limit_hit:
-                    await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
+                    await asyncio.sleep(rate_limit_hit)  # Introduce the delay specified by rate limit
                 else:
                     print("Rate limit is over. Resuming...")
                     break
