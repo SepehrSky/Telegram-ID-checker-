@@ -71,8 +71,9 @@ async def get_words():
 async def close():
     print("Closing the app.")
     await client.disconnect()
-    loop.stop()
-
+    await asyncio.sleep(1)  # Introduce a small delay
+    os._exit(0)  # Terminate the script
+    
 async def display_options():
     print('''
     - Username Checker -
