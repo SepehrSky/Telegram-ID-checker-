@@ -73,8 +73,7 @@ async def close():
     await client.disconnect()
     await asyncio.sleep(1)  # Introduce a small delay
     loop = asyncio.get_event_loop()
-    loop.close()  # Close the loop
-    os._exit(0)  # Terminate the script
+    loop.stop()
     
 async def display_options():
     print('''
