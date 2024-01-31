@@ -22,9 +22,7 @@ async def user_lookup(account):
             print(f"The telegram {account} is not available")
     except errors.FloodWaitError as fW:
         print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-        await asyncio.sleep(fW.seconds)
-        print("Resuming after rate limit")
-        return True
+        return fW.seconds
     except Exception as e:
         print(f"Unhandled error: {e}")
         return False
@@ -40,7 +38,11 @@ async def get_words():
             rate_limit_hit = True
             while rate_limit_hit:
                 rate_limit_hit = await user_lookup(name)
-                await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
+                if rate_limit_hit:
+                    await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
+                else:
+                    print("Rate limit is over. Resuming...")
+                    break
 
     print("Removing checked words from the word list...")
     # Implement remove_checked_words() as needed
