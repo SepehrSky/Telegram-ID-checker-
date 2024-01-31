@@ -56,6 +56,10 @@ async def get_words():
         # Implement remove_checked_words() as needed
         print("All done")
 
+        print("Options after word check:")
+        await display_options()
+
+
 async def close():
     print("Closing the app.")
     await client.disconnect()
