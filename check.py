@@ -72,6 +72,10 @@ async def close():
     print("Closing the app.")
     await client.disconnect()
     await asyncio.sleep(1)  # Introduce a small delay
+    loop = asyncio.get_event_loop()
+    loop.stop()  # Stop the event loop
+    loop.run_forever()  # Run the loop until it is fully stopped
+    loop.close()  # Close the loop
     os._exit(0)  # Terminate the script
     
 async def display_options():
