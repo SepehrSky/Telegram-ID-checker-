@@ -73,14 +73,8 @@ async def close():
     await client.disconnect()
     await asyncio.sleep(1)  # Introduce a small delay
     loop = asyncio.get_event_loop()
-    try:
-        loop.stop()  # Stop the event loop
-        loop.run_forever()  # Run the loop until it is fully stopped
-    except RuntimeError:
-        pass  # Ignore RuntimeError if the loop is already closed
-    finally:
-        loop.close()  # Close the loop
-        os._exit(0)  # Terminate the script
+    loop.close()  # Close the loop
+    os._exit(0)  # Terminate the script
     
 async def display_options():
     print('''
