@@ -49,7 +49,6 @@ async def user_lookup(account, retry_count=0):
         else:
             print("Unhandled error:", bR.message)
 
-
 async def get_words():
     path = os.path.join("word_lists", config.get('default', 'wordList'))
 
