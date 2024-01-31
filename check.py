@@ -3,6 +3,7 @@ import configparser
 import os
 import asyncio
 import sys
+import time
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -72,7 +73,7 @@ async def get_words():
 async def close():
     print("Closing the app.")
     await client.disconnect()
-    await asyncio.sleep(1)  # Introduce a small delay
+    time.sleep(1)  # Introduce a small delay
     raise SystemExit  # Terminate the script
     
 async def display_options():
