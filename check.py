@@ -72,7 +72,7 @@ async def get_words():
 
 async def close():
     print("Closing the app.")
-    await client.close()
+    await client.disconnect()
     time.sleep(1)  # Introduce a small delay
     sys.exit()  # Terminate the script
     
