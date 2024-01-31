@@ -13,7 +13,7 @@ bot_token = config.get('default', 'bot_token')
 client = TelegramClient('Checker', api_id, api_hash)
 client.start()
 
-async def user_lookup(account, retry_count=0):
+async def user_lookup(account):
     try:
         result = await client(functions.account.CheckUsernameRequest(username=account))
         if result:
@@ -23,11 +23,7 @@ async def user_lookup(account, retry_count=0):
     except errors.FloodWaitError as fW:
         print(f"Hit the rate limit, waiting {fW.seconds} seconds")
         await asyncio.sleep(fW.seconds)
-        retry_count += 1
-        if retry_count <= 3:  # You can adjust the maximum retry count as needed
-            await user_lookup(account, retry_count)
-        else:
-            print("Maximum retries reached. Exiting.")
+        await user_lookup(account)
     except errors.UsernameInvalidError as uI:
         print("Username is invalid")
     except errors.rpcbaseerrors.BadRequestError as bR:
@@ -41,11 +37,7 @@ async def user_lookup(account, retry_count=0):
         elif "FLOOD_WAIT" in bR.message:
             print(f"Hit the rate limit, waiting {bR.seconds} seconds")
             await asyncio.sleep(bR.seconds)
-            retry_count += 1
-            if retry_count <= 3:
-                await user_lookup(account, retry_count)
-            else:
-                print("Maximum retries reached. Exiting.")
+            await user_lookup(account)
         else:
             print("Unhandled error:", bR.message)
 
@@ -95,6 +87,7 @@ async def main():
                 await asyncio.sleep(fW.seconds)
                 print("Options after rate limit:")
                 await display_options()
+                continue  # Restart the loop to display the options
             except Exception as e:
                 print(f"Unhandled error: {e}")
                 await asyncio.sleep(5)
