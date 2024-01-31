@@ -27,8 +27,18 @@ async def user_lookup(account):
         print(f"Unhandled error: {e}")
         return False
 
+async def remove_checked_words(checked_words, word_list_path):
+    with open(word_list_path, 'r', encoding='utf-8-sig') as file:
+        words = file.read().split('\n')
+
+    updated_words = [word for word in words if word not in checked_words]
+
+    with open(word_list_path, 'w', encoding='utf-8-sig') as file:
+        file.write('\n'.join(updated_words))
+
 async def get_words():
     path = os.path.join("word_lists", config.get('default', 'wordList'))
+    checked_words = []
 
     if path is not None:
         with open(path, 'r', encoding='utf-8-sig') as file:
@@ -40,17 +50,20 @@ async def get_words():
                 print(f"Rate limit hit. Options after rate limit:")
                 await display_options()
                 option = input("Select your option: ")
-                
+
                 if option == '3':
                     print(f"Sleeping until rate limit is over ({rate_limit_seconds} seconds)...")
                     await asyncio.sleep(rate_limit_seconds)
                 elif option == '4':
                     print("Closing the app.")
                     await close()
-                    return  # Exit the loop if the app is closed
+                checked_words.append(name)
 
-    print("Removing checked words from the word list...")
-    # Implement remove_checked_words() as needed
+                # Introduce the 1/30 second delay
+                await asyncio.sleep(1/30)
+
+        await remove_checked_words(checked_words, path)
+
     print("All done")
 
 async def close():
