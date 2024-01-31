@@ -8,6 +8,7 @@ config.read('config.ini')
 
 api_id = int(config.get('default', 'api_id'))
 api_hash = config.get('default', 'api_hash')
+bot_token = config.get('default', 'bot_token')
 
 client = TelegramClient('Checker', api_id, api_hash)
 client.start()
@@ -21,20 +22,10 @@ async def user_lookup(account):
             print(f"The telegram {account} is not available")
     except errors.FloodWaitError as fW:
         print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-        await asyncio.sleep(fW.seconds)
-        print("Rate limit is over. Resuming...")
-        await user_lookup(account)
-    except errors.UsernameInvalidError as uI:
-        print("Username is invalid")
-    except errors.rpcbaseerrors.BadRequestError as bR:
-        print("Error:", bR.message)
-        if "FLOOD_WAIT" in bR.message:
-            print(f"Hit the rate limit, waiting {bR.seconds} seconds")
-            await asyncio.sleep(bR.seconds)
-            print("Rate limit is over. Resuming...")
-            await user_lookup(account)
-        else:
-            print("Unhandled error:", bR.message)
+        return fW.seconds
+    except Exception as e:
+        print(f"Unhandled error: {e}")
+        return False
 
 async def get_words():
     path = os.path.join("word_lists", config.get('default', 'wordList'))
@@ -44,16 +35,34 @@ async def get_words():
             words = file.read().split('\n')
 
         for name in words:
-            await user_lookup(name)
-            await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
+            rate_limit_seconds = await user_lookup(name)
+            if rate_limit_seconds:
+                print(f"Rate limit hit. Options after rate limit:")
+                await display_options()
+                option = input("Select your option: ")
+                
+                if option == '3':
+                    print(f"Sleeping until rate limit is over ({rate_limit_seconds} seconds)...")
+                    await asyncio.sleep(rate_limit_seconds)
+                elif option == '4':
+                    print("Closing the app.")
+                    await close()
 
-        print("Removing checked words from the word list...")
-        # Implement remove_checked_words() as needed
-        print("All done")
+    print("Removing checked words from the word list...")
+    # Implement remove_checked_words() as needed
+    print("All done")
 
 async def close():
     print("Closing the app.")
     await client.disconnect()
+
+async def display_options():
+    print('''
+    - Username Checker -
+    
+3 = Sleep until rate limit is over
+4 = Close the app
+    ''')
 
 async def main():
     print('''
@@ -70,8 +79,7 @@ async def main():
             try:
                 await get_words()
             except Exception as e:
-                print(f"Unhandled error: {e}")
-                await asyncio.sleep(5)
+                print(f"Error: {e}")
         elif option == '1':
             # Implement the case for entering username manually
             pass
