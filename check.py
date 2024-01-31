@@ -22,10 +22,7 @@ async def user_lookup(account):
             print(f"The telegram {account} is not available")
     except errors.FloodWaitError as fW:
         print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-        while fW.seconds > 0:
-            await asyncio.sleep(min(fW.seconds, 60))  # Sleep in chunks of 60 seconds or remaining seconds
-            fW.seconds -= 60
-            print(f"Remaining wait time: {fW.seconds} seconds")
+        await asyncio.sleep(fW.seconds)
         print("Resuming after rate limit")
         await user_lookup(account)
     except errors.UsernameInvalidError as uI:
@@ -44,7 +41,6 @@ async def user_lookup(account):
         else:
             print("Unhandled error:", bR.message)
 
-
 async def get_words():
     path = os.path.join("word_lists", config.get('default', 'wordList'))
 
@@ -53,21 +49,12 @@ async def get_words():
             words = file.read().split('\n')
 
         for name in words:
-            try:
-                await user_lookup(name)
-                await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
-            except errors.FloodWaitError as fW:
-                print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-                await asyncio.sleep(fW.seconds)
-                print("Options after rate limit:")
-                await display_options()
+            await user_lookup(name)
+            await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
 
-        print("Removing checked words from the word list...")
-        # Implement remove_checked_words() as needed
-        print("All done")
-
-        print("Options after word check:")
-        await display_options()
+    print("Removing checked words from the word list...")
+    # Implement remove_checked_words() as needed
+    print("All done")
 
 async def close():
     print("Closing the app.")
@@ -98,8 +85,7 @@ async def main():
             except errors.FloodWaitError as fW:
                 print(f"Hit the rate limit, waiting {fW.seconds} seconds")
                 await asyncio.sleep(fW.seconds)
-                print("Options after rate limit:")
-                await display_options()
+                print("Resuming after rate limit")
             except Exception as e:
                 print(f"Unhandled error: {e}")
                 await asyncio.sleep(5)
