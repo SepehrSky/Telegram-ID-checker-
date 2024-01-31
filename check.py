@@ -72,9 +72,9 @@ async def get_words():
 
 async def close():
     print("Closing the app.")
-    await client.disconnect()
+    await client.close()
     time.sleep(1)  # Introduce a small delay
-    raise SystemExit  # Terminate the script
+    sys.exit()  # Terminate the script
     
 async def display_options():
     print('''
