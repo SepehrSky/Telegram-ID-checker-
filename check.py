@@ -22,6 +22,7 @@ async def user_lookup(account):
             print(f"The telegram {account} is not available")
     except errors.FloodWaitError as fW:
         print(f"Hit the rate limit, waiting {fW.seconds} seconds")
+        await asyncio.sleep(fW.seconds)
         await user_lookup(account)
     except errors.UsernameInvalidError as uI:
         print("Username is invalid")
@@ -38,6 +39,7 @@ async def user_lookup(account):
             await user_lookup(account)
         else:
             print("Unhandled error:", bR.message)
+
 
 async def get_words():
     path = os.path.join("word_lists", config.get('default', 'wordList'))
