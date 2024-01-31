@@ -13,7 +13,7 @@ bot_token = config.get('default', 'bot_token')
 client = TelegramClient('Checker', api_id, api_hash)
 client.start()
 
-async def user_lookup(account, retry_counter=0):
+async def user_lookup(account):
     try:
         result = await client(functions.account.CheckUsernameRequest(username=account))
         if result:
@@ -34,22 +34,19 @@ async def get_words():
         with open(path, 'r', encoding='utf-8-sig') as file:
             words = file.read().split('\n')
 
-        retry_counter = 0
         for name in words:
-            rate_limit_hit = True
-            while rate_limit_hit:
-                rate_limit_hit = await user_lookup(name, retry_counter)
-                if rate_limit_hit:
-                    await asyncio.sleep(rate_limit_hit)  # Introduce the delay specified by rate limit
-                    retry_counter += 1
-                    if retry_counter >= 3:
-                        print("Options after hitting maximum retries:")
-                        await display_options()
-                        return
-                else:
-                    print("Rate limit is over. Resuming...")
-                    retry_counter = 0
-                    break
+            rate_limit_seconds = await user_lookup(name)
+            if rate_limit_seconds:
+                print(f"Rate limit hit. Options after rate limit:")
+                await display_options()
+                option = input("Select your option: ")
+                
+                if option == '3':
+                    print(f"Sleeping until rate limit is over ({rate_limit_seconds} seconds)...")
+                    await asyncio.sleep(rate_limit_seconds)
+                elif option == '4':
+                    print("Closing the app.")
+                    await close()
 
     print("Removing checked words from the word list...")
     # Implement remove_checked_words() as needed
@@ -81,9 +78,8 @@ async def main():
             print("Getting usernames from word_lists...")
             try:
                 await get_words()
-            except Exception:
-                print("Options after error:")
-                await display_options()
+            except Exception as e:
+                print(f"Error: {e}")
         elif option == '1':
             # Implement the case for entering username manually
             pass
