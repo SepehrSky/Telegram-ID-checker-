@@ -8,7 +8,6 @@ config.read('config.ini')
 
 api_id = int(config.get('default', 'api_id'))
 api_hash = config.get('default', 'api_hash')
-bot_token = config.get('default', 'bot_token')
 
 client = TelegramClient('Checker', api_id, api_hash)
 client.start()
@@ -23,6 +22,7 @@ async def user_lookup(account):
     except errors.FloodWaitError as fW:
         print(f"Hit the rate limit, waiting {fW.seconds} seconds")
         await asyncio.sleep(fW.seconds)
+        print("Rate limit is over. Resuming...")
         await user_lookup(account)
     except errors.UsernameInvalidError as uI:
         print("Username is invalid")
@@ -36,10 +36,11 @@ async def user_lookup(account):
             print(f"The telegram {account} is available")
         elif "FLOOD_WAIT" in bR.message:
             print(f"Hit the rate limit, waiting {bR.seconds} seconds")
+            await asyncio.sleep(bR.seconds)
+            print("Rate limit is over. Resuming...")
             await user_lookup(account)
         else:
             print("Unhandled error:", bR.message)
-
 
 async def get_words():
     path = os.path.join("word_lists", config.get('default', 'wordList'))
@@ -85,20 +86,18 @@ async def main():
             except errors.FloodWaitError as fW:
                 print(f"Hit the rate limit, waiting {fW.seconds} seconds")
                 await asyncio.sleep(fW.seconds)
-                print("Rate limit hit. Options after rate limit:")
+                print("Options after rate limit:")
+                await display_options()
+            except Exception as e:
+                print(f"Unhandled error: {e}")
+                await asyncio.sleep(5)
+                print("Options after error:")
                 await display_options()
         elif option == '1':
             # Implement the case for entering username manually
             pass
-        elif option == '3':
-            print("Sleep until rate limit is over")
-            await asyncio.sleep(fW.seconds)  # Use the same seconds as in the rate limit error
-        elif option == '4':
-            print("Closing the app.")
-            await client.disconnect()
-            break
         else:
-            print("Invalid option. Please enter 1, 2, 3, or 4.")
+            print("Invalid option. Please enter 1 or 2.")
 
 if __name__ == "__main__":
     try:
