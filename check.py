@@ -2,6 +2,7 @@ from telethon import TelegramClient, functions, errors
 import configparser
 import os
 import asyncio
+import sys
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -72,7 +73,7 @@ async def close():
     print("Closing the app.")
     await client.disconnect()
     await asyncio.sleep(1)  # Introduce a small delay
-    os._exit(0)  # Terminate the script
+    sys.exit(0)  # Terminate the script
     
 async def display_options():
     print('''
