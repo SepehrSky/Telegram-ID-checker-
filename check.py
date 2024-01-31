@@ -24,6 +24,10 @@ async def user_lookup(account):
         print(f"Hit the rate limit, waiting {fW.seconds} seconds")
         await asyncio.sleep(fW.seconds)
         print("Resuming after rate limit")
+        return True
+    except Exception as e:
+        print(f"Unhandled error: {e}")
+        return False
 
 async def get_words():
     path = os.path.join("word_lists", config.get('default', 'wordList'))
@@ -33,8 +37,10 @@ async def get_words():
             words = file.read().split('\n')
 
         for name in words:
-            await user_lookup(name)
-            await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
+            rate_limit_hit = True
+            while rate_limit_hit:
+                rate_limit_hit = await user_lookup(name)
+                await asyncio.sleep(1/30)  # Introduce the 1/30 second delay
 
     print("Removing checked words from the word list...")
     # Implement remove_checked_words() as needed
@@ -66,14 +72,7 @@ async def main():
             print("Getting usernames from word_lists...")
             try:
                 await get_words()
-            except errors.FloodWaitError as fW:
-                print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-                await asyncio.sleep(fW.seconds)
-                print("Options after rate limit:")
-                await display_options()
-            except Exception as e:
-                print(f"Unhandled error: {e}")
-                await asyncio.sleep(5)
+            except Exception:
                 print("Options after error:")
                 await display_options()
         elif option == '1':
