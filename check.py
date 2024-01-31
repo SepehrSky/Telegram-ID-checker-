@@ -28,13 +28,7 @@ async def user_lookup(account):
         print("Username is invalid")
     except errors.rpcbaseerrors.BadRequestError as bR:
         print("Error:", bR.message)
-        if "USERNAME_INVALID" in bR.message:
-            print(f"The telegram {account} is invalid")
-        elif "USERNAME_OCCUPIED" in bR.message:
-            print(f"The telegram {account} is already taken")
-        elif "USERNAME_NOT_OCCUPIED" in bR.message:
-            print(f"The telegram {account} is available")
-        elif "FLOOD_WAIT" in bR.message:
+        if "FLOOD_WAIT" in bR.message:
             print(f"Hit the rate limit, waiting {bR.seconds} seconds")
             await asyncio.sleep(bR.seconds)
             print("Rate limit is over. Resuming...")
@@ -61,14 +55,6 @@ async def close():
     print("Closing the app.")
     await client.disconnect()
 
-async def display_options():
-    print('''
-    - Username Checker -
-    
-3 = Sleep until rate limit is over
-4 = Close the app
-    ''')
-
 async def main():
     print('''
     - Username Checker -
@@ -83,16 +69,9 @@ async def main():
             print("Getting usernames from word_lists...")
             try:
                 await get_words()
-            except errors.FloodWaitError as fW:
-                print(f"Hit the rate limit, waiting {fW.seconds} seconds")
-                await asyncio.sleep(fW.seconds)
-                print("Options after rate limit:")
-                await display_options()
             except Exception as e:
                 print(f"Unhandled error: {e}")
                 await asyncio.sleep(5)
-                print("Options after error:")
-                await display_options()
         elif option == '1':
             # Implement the case for entering username manually
             pass
