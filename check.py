@@ -57,6 +57,7 @@ async def get_words():
                 elif option == '4':
                     print("Closing the app.")
                     await close()
+                    return  # Return from the function to avoid further execution
                 checked_words.append(name)
 
                 # Introduce the 1/30 second delay
@@ -65,6 +66,7 @@ async def get_words():
         await remove_checked_words(checked_words, path)
 
     print("All done")
+
 
 async def close():
     print("Closing the app.")
