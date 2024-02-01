@@ -2,6 +2,7 @@ from telethon import TelegramClient, functions, errors
 import configparser
 import os
 import time
+import asyncio
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -9,7 +10,7 @@ config.read('config.ini')
 api_id = config.get('default', 'api_id')
 api_hash = config.get('default', 'api_hash')
 
-if api_id == '28228681' or api_hash == 'b81a9e939de31be895836571119b490a':
+if api_id == 'UPDATE ME' or api_hash == 'UPDATE ME':
     print("Please read the config.ini and README.md")
     input()
     exit()
@@ -93,13 +94,13 @@ async def main():
         bulk checking may result in false positives and longer wait times
             ''')
     print("1 = Enter username manually\n2 = Read a list of usernames from the word_lists folder")
-    set = ["1", "2"]
+    options = ["1", "2"]
     option = input("Select your option: ")
     rate_limiter = RateLimiter(0.5)  # Adjust the rate limit as needed
 
     while True:
-        if str(option) in set:
-            if option == set[0]:
+        if option in options:
+            if option == "1":
                 name = input("Enter a username: ")
                 await user_lookup(name, rate_limiter)
             else:
@@ -110,5 +111,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    import asyncio
     asyncio.run(main())
