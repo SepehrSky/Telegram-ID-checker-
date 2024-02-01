@@ -95,7 +95,7 @@ def main():
     print("1 = Enter username manually\n2 = Read a list of usernames from the word_lists folder")
     set = ["1", "2"]
     option = input("Select your option: ")
-    rate_limiter = RateLimiter(0.5)  # Adjust the rate limit as needed
+    rate_limiter = RateLimiter(0.2)  # Adjust the rate limit as needed
 
     while True:
         if str(option) in set:
